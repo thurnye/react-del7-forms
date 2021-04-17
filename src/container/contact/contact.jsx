@@ -5,25 +5,37 @@ export default class contact extends Component {
     state = {
         name: '',
         email: '',
-        message: ''
+        message: '',
     }
 
 
     handleChange = (e) => {
-        // e.preventDefault()
         this.setState({[e.target.name] : e.target.value})
-        console.log(e.target.name, e.target.value)
+        // console.log(e.target.name, e.target.value)
       }
 
 
-    handleSubmit = (e) => {
-        e.preventDefault();
+    handleSubmit = async () => {
         const message = {
             name: this.state.name,
             email: this.state.email,
             message: this.state.message
         }
-        console.log(message)
+        let options = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(message)
+        };
+
+        await fetch("/api", options)
+          .then(res => res.json())
+          .then(data => {
+            this.props.getMessages();
+            // clear out this.state.content
+            this.setState({ name: "", email:"", message:"" })
+          })
     }
 
     render() {
@@ -40,12 +52,12 @@ export default class contact extends Component {
 
                 <div className="input-group mb-3">
                     <span className="input-group-text" id="basic-addon2">E-mail</span>
-                    <input type="text" className="form-control"  name="email"  aria-label="Recipient's username" aria-describedby="basic-addon2"/>
+                    <input type="text" className="form-control"  onChange={this.handleChange} name="email"  aria-label="Recipient's username" aria-describedby="basic-addon2"/>
                 </div>
 
                 <div className="input-group">
                     <span className="input-group-text">Message</span>
-                    <textarea className="form-control" name="message" aria-label="With textarea"></textarea>
+                    <textarea className="form-control"  onChange={this.handleChange}name="message" aria-label="With textarea"></textarea>
                 </div>
 
                 <div className="d-grid gap-2 col-6 mx-auto">
